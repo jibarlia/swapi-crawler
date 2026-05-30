@@ -249,12 +249,24 @@ class CrawlerService:
         raw_starships = self._client.fetch_all_starships()
 
         counts = {
-            "planets": self._planet_repo.upsert_batch([_transform_planet(p) for p in raw_planets]),
-            "species": self._species_repo.upsert_batch([_transform_species(s) for s in raw_species]),
-            "people": self._people_repo.upsert_batch([_transform_person(p) for p in raw_people]),
-            "films": self._film_repo.upsert_batch([_transform_film(f) for f in raw_films]),
-            "vehicles": self._vehicle_repo.upsert_batch([_transform_vehicle(v) for v in raw_vehicles]),
-            "starships": self._starship_repo.upsert_batch([_transform_starship(s) for s in raw_starships]),
+            "planets": self._planet_repo.upsert_batch(
+                [_transform_planet(p) for p in raw_planets]
+            ),
+            "species": self._species_repo.upsert_batch(
+                [_transform_species(s) for s in raw_species]
+            ),
+            "people": self._people_repo.upsert_batch(
+                [_transform_person(p) for p in raw_people]
+            ),
+            "films": self._film_repo.upsert_batch(
+                [_transform_film(f) for f in raw_films]
+            ),
+            "vehicles": self._vehicle_repo.upsert_batch(
+                [_transform_vehicle(v) for v in raw_vehicles]
+            ),
+            "starships": self._starship_repo.upsert_batch(
+                [_transform_starship(s) for s in raw_starships]
+            ),
         }
 
         self._person_film_repo.upsert_batch(_person_film_pairs(raw_people))

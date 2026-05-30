@@ -14,6 +14,10 @@ class BaseLinkRepository:
     def upsert_batch(self, pairs: list[dict]) -> None:
         if not pairs:
             return
-        stmt = pg_insert(self.model).values(pairs).on_conflict_do_nothing(index_elements=self.pk_columns)
+        stmt = (
+            pg_insert(self.model)
+            .values(pairs)
+            .on_conflict_do_nothing(index_elements=self.pk_columns)
+        )
         self._session.execute(stmt)
         self._session.commit()

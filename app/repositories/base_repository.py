@@ -16,13 +16,19 @@ class BaseRepository:
             return 0
         insert_stmt = pg_insert(self.model).values(records)
         update_cols = {c: insert_stmt.excluded[c] for c in records[0] if c != "id"}
-        stmt = insert_stmt.on_conflict_do_update(index_elements=["id"], set_=update_cols)
+        stmt = insert_stmt.on_conflict_do_update(
+            index_elements=["id"], set_=update_cols
+        )
         result = self._session.execute(stmt)
         self._session.commit()
         return result.rowcount
 
     def get_all(self, offset: int = 0, limit: int = 20) -> list:
-        return list(self._session.exec(select(self.model).offset(offset).limit(limit).order_by(self.model.id)).all())
+        return list(
+            self._session.exec(
+                select(self.model).offset(offset).limit(limit).order_by(self.model.id)
+            ).all()
+        )
 
     def get_by_id(self, entity_id: int) -> Optional[SQLModel]:
         return self._session.get(self.model, entity_id)
