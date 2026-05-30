@@ -1,2 +1,11 @@
 psycopg==3.3.4
 psycopg-binary==3.3.4
+sqlmodel==0.0.21
+sqlalchemy==2.0.36
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+httpx==0.28.1
+typer==0.13.1
+environs==11.0.0
+pytest==8.3.3
+pytest-mock==3.14.0

@@ -42,12 +42,24 @@ app/
 ```bash
 python -m venv .venv
 source .venv/bin/activate
+
+uv venv
 ```
 
 ## Install dependencies
 
 ```bash
 pip install -r requirements.txt
+```
+
+## Formatting with Ruff
+
+```bash
+uv run ruff check
+uv run ruff check . --fix
+uv run ruff format .
+
+ruff format path/to/file
 ```
 
 ---
