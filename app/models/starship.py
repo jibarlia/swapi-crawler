@@ -1,10 +1,9 @@
-from datetime import datetime
+from sqlmodel import Field
 
-from sqlalchemy import Column, DateTime, func
-from sqlmodel import Field, SQLModel
+from app.models.mixins import TimestampMixin
 
 
-class Starship(SQLModel, table=True):
+class Starship(TimestampMixin, table=True):
     __tablename__ = "starships"
 
     id: int = Field(primary_key=True)
@@ -22,18 +21,3 @@ class Starship(SQLModel, table=True):
     mglt: str | None = None
     starship_class: str | None = None
     url: str | None = None
-    created_at: datetime | None = Field(
-        default=None,
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), nullable=False
-        ),
-    )
-    updated_at: datetime | None = Field(
-        default=None,
-        sa_column=Column(
-            DateTime(timezone=True),
-            server_default=func.now(),
-            onupdate=func.now(),
-            nullable=False,
-        ),
-    )

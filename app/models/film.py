@@ -1,10 +1,10 @@
-from datetime import datetime
+from sqlalchemy import Column, Text
+from sqlmodel import Field
 
-from sqlalchemy import Column, DateTime, Text, func
-from sqlmodel import Field, SQLModel
+from app.models.mixins import TimestampMixin
 
 
-class Film(SQLModel, table=True):
+class Film(TimestampMixin, table=True):
     __tablename__ = "films"
 
     id: int = Field(primary_key=True)
@@ -15,18 +15,3 @@ class Film(SQLModel, table=True):
     producer: str | None = None
     release_date: str | None = None
     url: str | None = None
-    created_at: datetime | None = Field(
-        default=None,
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), nullable=False
-        ),
-    )
-    updated_at: datetime | None = Field(
-        default=None,
-        sa_column=Column(
-            DateTime(timezone=True),
-            server_default=func.now(),
-            onupdate=func.now(),
-            nullable=False,
-        ),
-    )

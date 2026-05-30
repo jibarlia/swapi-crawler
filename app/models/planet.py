@@ -1,10 +1,9 @@
-from datetime import datetime
+from sqlmodel import Field
 
-from sqlalchemy import Column, DateTime, func
-from sqlmodel import Field, SQLModel
+from app.models.mixins import TimestampMixin
 
 
-class Planet(SQLModel, table=True):
+class Planet(TimestampMixin, table=True):
     __tablename__ = "planets"
 
     id: int = Field(primary_key=True)
@@ -18,18 +17,3 @@ class Planet(SQLModel, table=True):
     surface_water: str | None = None
     population: str | None = None
     url: str | None = None
-    created_at: datetime | None = Field(
-        default=None,
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), nullable=False
-        ),
-    )
-    updated_at: datetime | None = Field(
-        default=None,
-        sa_column=Column(
-            DateTime(timezone=True),
-            server_default=func.now(),
-            onupdate=func.now(),
-            nullable=False,
-        ),
-    )
