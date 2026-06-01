@@ -9,10 +9,16 @@ from app.services.crawler_service import CrawlerService
 cli = typer.Typer(name="swapi-crawler")
 
 
+@cli.command(name="init-db")
+def init_db():
+    """Create all database tables (run once before the first crawl)."""
+    create_db_and_tables()
+    typer.echo("Database schema initialized.")
+
+
 @cli.command()
 def crawl():
     """Fetch all SWAPI entities and upsert them into the database."""
-    create_db_and_tables()
     with Session(engine) as session:
         with SWAPIClient() as client:
             counts = CrawlerService(client=client, session=session).crawl()

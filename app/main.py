@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlmodel import Session
 
@@ -12,12 +14,14 @@ from app.models.starship import Starship
 from app.models.vehicle import Vehicle
 from app.services.entity_service import EntityService
 
-app = FastAPI(title=APP_NAME, version="1.0.0")
 
-
-@app.on_event("startup")
-def on_startup():
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
     create_db_and_tables()
+    yield
+
+
+app = FastAPI(title=APP_NAME, version="1.0.0", lifespan=lifespan)
 
 
 # --- People ---

@@ -78,7 +78,27 @@ http://127.0.0.1:8000/docs
 
 ---
 
+# First Run
+
+On a fresh database, create the schema before crawling:
+
+```bash
+python -m app.cli init-db   # create tables (run once)
+python -m app.cli crawl     # fetch + persist entities
+```
+
+> The FastAPI app also creates the schema automatically on startup, so if
+> you've already run `uvicorn app.main:app` you can skip `init-db`.
+
+---
+
 # CLI Examples
+
+## Initialize the database schema
+
+```bash
+python -m app.cli init-db
+```
 
 ## Crawl entities
 
