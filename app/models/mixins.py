@@ -1,24 +1,22 @@
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, func
+from sqlalchemy import DateTime, func
 from sqlmodel import Field, SQLModel
 
 
 class TimestampMixin(SQLModel):
+    # Use sa_type + sa_column_kwargs (not a shared Column instance) so SQLModel
+    # builds a fresh Column per table; a single Column object can only be
+    # attached to one table.
     created_at: datetime | None = Field(
         default=None,
-        sa_column=Column(
-            DateTime(timezone=True),
-            server_default=func.now(),
-            nullable=False,
-        ),
+        sa_type=DateTime(timezone=True),
+        sa_column_kwargs={"server_default": func.now()},
+        nullable=False,
     )
     updated_at: datetime | None = Field(
         default=None,
-        sa_column=Column(
-            DateTime(timezone=True),
-            server_default=func.now(),
-            onupdate=func.now(),
-            nullable=False,
-        ),
+        sa_type=DateTime(timezone=True),
+        sa_column_kwargs={"server_default": func.now(), "onupdate": func.now()},
+        nullable=False,
     )
