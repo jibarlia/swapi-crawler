@@ -53,6 +53,26 @@ scheme, e.g.:
 DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/swapi
 ```
 
+### Running commands
+
+There are two equally valid styles — pick one:
+
+- **Don't activate anything** — prefix commands with `uv run`, which auto-syncs and uses the
+  project venv:
+
+  ```bash
+  uv run python -m app.cli crawl
+  uv run pytest
+  ```
+
+- **Activate the venv** if you prefer a bare `python` / `pytest`:
+
+  ```bash
+  source .venv/bin/activate
+  ```
+
+The rest of this README uses the `uv run` form.
+
 ---
 
 ## First Run
@@ -102,7 +122,7 @@ GET /films  /planets  /species  /vehicles  /starships   (same shape)
 ## Development
 
 ```bash
-uv run pytest                       # run tests
+uv run pytest                       # run the unit suite (no database required)
 uv run ruff check . --fix           # lint + autofix
 uv run ruff format .                # format
 
@@ -121,4 +141,4 @@ CLI commands, pytest, Ruff).
 - Async DB support
 - Docker / docker-compose for Postgres + app
 - Retry/backoff in the SWAPI client
-- Decouple logic-only tests from the database
+- Integration tests for the repository layer against a real test database
