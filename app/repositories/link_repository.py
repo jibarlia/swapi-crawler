@@ -19,5 +19,5 @@ class BaseLinkRepository:
             .values(pairs)
             .on_conflict_do_nothing(index_elements=self.pk_columns)
         )
-        self._session.execute(stmt)
+        self._session.exec(stmt)
         self._session.commit()

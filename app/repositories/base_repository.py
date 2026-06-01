@@ -19,9 +19,12 @@ class BaseRepository:
         stmt = insert_stmt.on_conflict_do_update(
             index_elements=["id"], set_=update_cols
         )
-        result = self._session.execute(stmt)
+        self._session.exec(stmt)
         self._session.commit()
-        return result.rowcount
+        # on_conflict_do_update writes every record (insert or update), so the
+        # affected count is just the batch size — psycopg reports rowcount as -1
+        # for multi-row upserts, which isn't usable.
+        return len(records)
 
     def get_all(self, offset: int = 0, limit: int = 20) -> list:
         return list(
