@@ -66,4 +66,4 @@ The layered structure enforces a strict dependency direction: `cli/main → serv
 - The repository layer owns all SQL — services must not write raw queries; repositories must not hold business logic.
 - `upsert_batch` uses Postgres `INSERT ... ON CONFLICT DO UPDATE` and returns `len(records)` (psycopg reports `-1` for multi-row upserts).
 - Use `session.exec()` (not the deprecated `session.execute()`).
-- Tests live in `tests/` and follow `test_*.py`. Mock the SWAPI client with `pytest-mock`. (Known gap: some logic-only tests currently pull in a DB-bound fixture — to be decoupled.)
+- Tests live in `tests/` and follow `test_*.py`. The suite is currently **unit-only** and must not require a database — mock the SWAPI client and any session/repository with `pytest-mock`. DB-backed integration tests (repositories against a real test Postgres) are deferred to a later stage.
