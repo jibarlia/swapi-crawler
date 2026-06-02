@@ -169,6 +169,32 @@ Example `GET /people/1/details` (abbreviated):
 
 ---
 
+## Docker
+
+Run the whole stack (PostgreSQL + the FastAPI app) with Docker — no local `uv` or
+Postgres needed.
+
+```bash
+# Full stack (Postgres + app) via compose
+docker compose up -d --build        # starts Postgres + API at http://localhost:8000
+docker compose run --rm app uv run python -m app.cli crawl   # one-off crawl
+docker compose down                 # stop (add -v to also wipe the DB volume)
+```
+
+Swagger UI is at `http://localhost:8000/docs`. The schema is created automatically on
+app startup, so there's no need to run `init-db` under compose.
+
+To build and run the image on its own (point it at a reachable Postgres):
+
+```bash
+docker build -t swapi-crawler .
+docker run -p 8000:8000 \
+  -e DATABASE_URL=postgresql+psycopg://postgres:postgres@host.docker.internal:5432/swapi \
+  swapi-crawler
+```
+
+---
+
 ## Development
 
 ```bash
@@ -189,6 +215,5 @@ CLI commands, pytest, Ruff).
 
 - Alembic migrations
 - Async DB support
-- Docker / docker-compose for Postgres + app
 - Retry/backoff in the SWAPI client
 - Integration tests for the repository layer against a real test database
