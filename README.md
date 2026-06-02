@@ -7,9 +7,9 @@ Typer CLI and a FastAPI REST API.
 Entities: **people, films, planets, species, vehicles, starships**, plus the many-to-many
 relationships between them (e.g. people ↔ films, films ↔ planets).
 
-> This started life as a generic public-API crawler boilerplate and keeps a clean layered
-> structure (`cli/main → service → repository → db`), so it can still be forked as a base for
-> another public-API exercise. From here on, though, it is SWAPI-specific.
+> The project follows a clean layered architecture
+> (cli → service → repository → db)
+> and can serve as a foundation for similar public API ingestion projects.
 
 Built with: **FastAPI · SQLModel · Typer · HTTPX · PostgreSQL (psycopg 3) · uv**
 
@@ -33,7 +33,7 @@ app/
 
 ## Setup
 
-This project uses [**uv**](https://docs.astral.sh/uv/). Dependencies live in `pyproject.toml`
+This project uses **[uv](https://docs.astral.sh/uv/)**. Dependencies live in `pyproject.toml`
 and are pinned in `uv.lock` — there is no `requirements.txt`.
 
 ```bash
@@ -58,15 +58,12 @@ DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/swapi
 There are two equally valid styles — pick one:
 
 - **Don't activate anything** — prefix commands with `uv run`, which auto-syncs and uses the
-  project venv:
-
+project venv:
   ```bash
   uv run python -m app.cli crawl
   uv run pytest
   ```
-
 - **Activate the venv** if you prefer a bare `python` / `pytest`:
-
   ```bash
   source .venv/bin/activate
   ```
@@ -114,7 +111,12 @@ Each entity exposes a paginated list and a detail endpoint, e.g.:
 ```txt
 GET /people            ?offset=0&limit=20
 GET /people/{id}
-GET /films  /planets  /species  /vehicles  /starships   (same shape)
+
+GET /films
+GET /planets
+GET /species
+GET /vehicles
+GET /starships
 ```
 
 People also expose their relationships and a composite detail view:
@@ -217,3 +219,4 @@ CLI commands, pytest, Ruff).
 - Async DB support
 - Retry/backoff in the SWAPI client
 - Integration tests for the repository layer against a real test database
+
