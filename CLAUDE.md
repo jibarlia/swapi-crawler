@@ -52,9 +52,13 @@ The layered structure enforces a strict dependency direction: `cli/main → serv
 | Client | `app/clients/public_api_client.py` | `SWAPIClient` — HTTPX client fetching each `swapi.info` collection |
 | Repository | `app/repositories/` | Data access only. `base_repository.py` (generic upsert/get/count via `model = X`), `link_repository.py` (join-table upserts), per-entity subclasses |
 | Service | `app/services/crawler_service.py` | Orchestrates fetch → transform → upsert, including the link/join tables |
-| Service | `app/services/entity_service.py` | Read-side queries (list/get per entity) for CLI and API |
+| Service | `app/services/entity_service.py` | Generic read-side queries (list/get per entity) for CLI and API |
+| Service | `app/services/person_service.py` | Person relationship reads (films/starships/vehicles/species/homeworld) + composite `details` |
 | CLI | `app/cli.py` | Typer commands: `init-db`, `crawl`, `reset-db` |
-| API | `app/main.py` | FastAPI app; `GET` list/detail endpoints per entity; schema bootstrap via `lifespan` |
+| API | `app/api/routers/` | One `APIRouter` per entity (list/detail; `people` also has relation + `details` routes) |
+| API | `app/api/schemas/` | Response schemas (e.g. `PersonDetails` — nested homeworld + relation lists) |
+| API | `app/api/dependencies.py` | FastAPI `Depends` providers (services; `get_existing_person` → 404) |
+| API | `app/main.py` | App assembly only: `lifespan` schema bootstrap + `include_router` for each entity |
 
 ## Key Conventions
 
@@ -63,7 +67,8 @@ The layered structure enforces a strict dependency direction: `cli/main → serv
 - Database is **PostgreSQL** via `psycopg` (v3); `DATABASE_URL` uses the `postgresql+psycopg://` scheme.
 - Schema lifecycle is explicit: `init-db` / `reset-db` own DDL; the API `lifespan` also bootstraps tables on startup. `crawl` assumes the schema exists.
 - Models use **SQLModel**. SWAPI exposes related entities as URLs; the crawler extracts integer IDs from those URLs and resolves relationships into FK columns and join tables.
+- Models are **flat** — no SQLModel `Relationship()` declarations. Relations are read via explicit JOIN queries: `BaseLinkRepository.get_related(...)` joins a join table to its target entity table. Keep this pattern when adding relations for other entities.
 - The repository layer owns all SQL — services must not write raw queries; repositories must not hold business logic.
 - `upsert_batch` uses Postgres `INSERT ... ON CONFLICT DO UPDATE` and returns `len(records)` (psycopg reports `-1` for multi-row upserts).
 - Use `session.exec()` (not the deprecated `session.execute()`).
-- Tests live in `tests/` and follow `test_*.py`. Mock the SWAPI client with `pytest-mock`. (Known gap: some logic-only tests currently pull in a DB-bound fixture — to be decoupled.)
+- Tests live in `tests/` and follow `test_*.py`. The suite is currently **unit-only** and must not require a database — mock the SWAPI client and any session/repository with `pytest-mock`. DB-backed integration tests (repositories against a real test Postgres) are deferred to a later stage.

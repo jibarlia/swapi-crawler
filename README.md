@@ -53,6 +53,26 @@ scheme, e.g.:
 DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/swapi
 ```
 
+### Running commands
+
+There are two equally valid styles — pick one:
+
+- **Don't activate anything** — prefix commands with `uv run`, which auto-syncs and uses the
+  project venv:
+
+  ```bash
+  uv run python -m app.cli crawl
+  uv run pytest
+  ```
+
+- **Activate the venv** if you prefer a bare `python` / `pytest`:
+
+  ```bash
+  source .venv/bin/activate
+  ```
+
+The rest of this README uses the `uv run` form.
+
 ---
 
 ## First Run
@@ -97,12 +117,62 @@ GET /people/{id}
 GET /films  /planets  /species  /vehicles  /starships   (same shape)
 ```
 
+People also expose their relationships and a composite detail view:
+
+```txt
+GET /people/{id}/films
+GET /people/{id}/starships
+GET /people/{id}/vehicles
+GET /people/{id}/species
+GET /people/{id}/details    # person + nested homeworld, films, starships, vehicles, species
+```
+
+Example `GET /people/1/details` (abbreviated):
+
+```json
+{
+  "id": 1,
+  "name": "Luke Skywalker",
+  "height": "172",
+  "mass": "77",
+  "hair_color": "blond",
+  "skin_color": "fair",
+  "eye_color": "blue",
+  "birth_year": "19BBY",
+  "gender": "male",
+  "url": "https://swapi.info/api/people/1",
+  "created_at": "2014-12-09T13:50:51.644000+00:00",
+  "updated_at": "2014-12-20T21:17:56.891000+00:00",
+  "homeworld": {
+    "id": 1,
+    "name": "Tatooine",
+    "climate": "arid",
+    "terrain": "desert",
+    "population": "200000",
+    "url": "https://swapi.info/api/planets/1"
+  },
+  "films": [
+    { "id": 1, "title": "A New Hope", "episode_id": 4, "release_date": "1977-05-25" }
+  ],
+  "starships": [
+    { "id": 12, "name": "X-wing", "model": "T-65 X-wing", "starship_class": "Starfighter" }
+  ],
+  "vehicles": [
+    { "id": 14, "name": "Snowspeeder", "vehicle_class": "airspeeder" }
+  ],
+  "species": []
+}
+```
+
+> Nested objects include all their model fields; only a subset is shown above for brevity.
+> `homeworld` is `null` when the person has none, and each relation list is `[]` when empty.
+
 ---
 
 ## Development
 
 ```bash
-uv run pytest                       # run tests
+uv run pytest                       # run the unit suite (no database required)
 uv run ruff check . --fix           # lint + autofix
 uv run ruff format .                # format
 
@@ -121,4 +191,4 @@ CLI commands, pytest, Ruff).
 - Async DB support
 - Docker / docker-compose for Postgres + app
 - Retry/backoff in the SWAPI client
-- Decouple logic-only tests from the database
+- Integration tests for the repository layer against a real test database
