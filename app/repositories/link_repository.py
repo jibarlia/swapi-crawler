@@ -1,7 +1,7 @@
 from typing import Type
 
 from sqlalchemy.dialects.postgresql import insert as pg_insert
-from sqlmodel import Session, SQLModel
+from sqlmodel import Session, SQLModel, select
 
 
 class BaseLinkRepository:
@@ -21,3 +21,19 @@ class BaseLinkRepository:
         )
         self._session.exec(stmt)
         self._session.commit()
+
+    def get_related(
+        self,
+        source_col: str,
+        source_id: int,
+        target_model: Type[SQLModel],
+        target_col: str,
+    ) -> list:
+        """Fetch target entities linked to ``source_id`` through this join table."""
+        stmt = (
+            select(target_model)
+            .join(self.model, getattr(self.model, target_col) == target_model.id)
+            .where(getattr(self.model, source_col) == source_id)
+            .order_by(target_model.id)
+        )
+        return list(self._session.exec(stmt).all())

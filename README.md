@@ -117,6 +117,56 @@ GET /people/{id}
 GET /films  /planets  /species  /vehicles  /starships   (same shape)
 ```
 
+People also expose their relationships and a composite detail view:
+
+```txt
+GET /people/{id}/films
+GET /people/{id}/starships
+GET /people/{id}/vehicles
+GET /people/{id}/species
+GET /people/{id}/details    # person + nested homeworld, films, starships, vehicles, species
+```
+
+Example `GET /people/1/details` (abbreviated):
+
+```json
+{
+  "id": 1,
+  "name": "Luke Skywalker",
+  "height": "172",
+  "mass": "77",
+  "hair_color": "blond",
+  "skin_color": "fair",
+  "eye_color": "blue",
+  "birth_year": "19BBY",
+  "gender": "male",
+  "url": "https://swapi.info/api/people/1",
+  "created_at": "2014-12-09T13:50:51.644000+00:00",
+  "updated_at": "2014-12-20T21:17:56.891000+00:00",
+  "homeworld": {
+    "id": 1,
+    "name": "Tatooine",
+    "climate": "arid",
+    "terrain": "desert",
+    "population": "200000",
+    "url": "https://swapi.info/api/planets/1"
+  },
+  "films": [
+    { "id": 1, "title": "A New Hope", "episode_id": 4, "release_date": "1977-05-25" }
+  ],
+  "starships": [
+    { "id": 12, "name": "X-wing", "model": "T-65 X-wing", "starship_class": "Starfighter" }
+  ],
+  "vehicles": [
+    { "id": 14, "name": "Snowspeeder", "vehicle_class": "airspeeder" }
+  ],
+  "species": []
+}
+```
+
+> Nested objects include all their model fields; only a subset is shown above for brevity.
+> `homeworld` is `null` when the person has none, and each relation list is `[]` when empty.
+
 ---
 
 ## Development
